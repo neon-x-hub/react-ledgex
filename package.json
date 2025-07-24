@@ -3,6 +3,7 @@
     "version": "0.5.0",
     "description": "Key-value state management with efficient undo/redo for React",
     "main": "dist/index.js",
+    "type": "module",
     "module": "dist/esm/index.js",
     "types": "dist/types/index.d.ts",
     "files": [
@@ -18,9 +19,8 @@
         "react": ">=16.8.0"
     },
     "devDependencies": {
-        "rollup": "^3.0.0",
-        "@rollup/plugin-typescript": "^11.0.0",
-        "np": "^7.0.0"
+        "np": "^7.0.0",
+        "rollup": "^3.29.5"
     },
     "keywords": [
         "react",

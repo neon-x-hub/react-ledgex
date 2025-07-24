@@ -157,4 +157,4 @@ class Ledger {
     }
 }
 
-export default Ledger;
+export { Ledger };

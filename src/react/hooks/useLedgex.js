@@ -1,8 +1,8 @@
 import { useContext, useMemo } from 'react';
-import { LedgexContext } from './LedgexProvider';
+import { LedgexContext } from './LedgexProvider.js';
 
 
-export function useLedgex() {
+function useLedgex() {
     const ledger = useContext(LedgexContext);
     if (!ledger) throw new Error('Missing LedgexProvider');
 
@@ -31,3 +31,5 @@ export function useLedgex() {
         })
     }), [ledger]);
 }
+
+export { useLedgex };
