@@ -1,0 +1,32 @@
+# Development files
+src/
+test/
+examples/
+*.config.js
+*.test.js
+rollup.config.js
+
+# Version control
+.git/
+.gitignore
+.github/
+
+# Documentation
+*.md
+!README.md
+CHANGELOG.md
+
+# Environment files
+.env
+.env.*
+npm-debug.log
+
+# Build system
+node_modules/
+dist/types/ # If not publishing TypeScript definitions
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo

@@ -1,0 +1,33 @@
+{
+    "name": "react-ledgex",
+    "version": "0.5.0",
+    "description": "Key-value state management with efficient undo/redo for React",
+    "main": "dist/index.js",
+    "module": "dist/esm/index.js",
+    "types": "dist/types/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "rollup -c",
+        "test": "node --test",
+        "prepublishOnly": "npm run build && npm test",
+        "release": "np --no-tests"
+    },
+    "peerDependencies": {
+        "react": ">=16.8.0"
+    },
+    "devDependencies": {
+        "rollup": "^3.0.0",
+        "@rollup/plugin-typescript": "^11.0.0",
+        "np": "^7.0.0"
+    },
+    "keywords": [
+        "react",
+        "state",
+        "undo",
+        "redo",
+        "time-travel"
+    ],
+    "license": "MIT"
+}
