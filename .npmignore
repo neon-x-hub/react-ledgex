@@ -30,3 +30,9 @@ dist/types/ # If not publishing TypeScript definitions
 .idea/
 *.swp
 *.swo
+
+# Images
+images/
+*.gif
+*.png
+*.jpg
