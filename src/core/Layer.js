@@ -20,10 +20,6 @@ class Layer {
   * @param {any} [value] - Required if first param is string
   */
     set(keyOrObject, value, time = this.clock.peek()) {
-
-        console.log("SET", keyOrObject, value, time);
-
-
         if (typeof keyOrObject === 'object') {
             const flatUpdates = this._flattenObject(keyOrObject);
             for (const [key, val] of Object.entries(flatUpdates)) {
@@ -47,6 +43,7 @@ class Layer {
     }
 
     isUpdateMeaningful(updates, time) {
+
         const flat = typeof updates === 'object'
             ? this._flattenObject(updates)
             : { [updates]: value };
@@ -100,9 +97,7 @@ class Layer {
 
     // History flushing (keep at least one)
     flush(thresholdTime) {
-        console.log("FLUSHING...", this.history, thresholdTime); // thresholdTime === 2
         this._trimHistory(thresholdTime, { direction: "after", keepLatest: true });
-        console.log("FLUSHED ", this.history);
 
     }
 
@@ -146,7 +141,7 @@ class Layer {
                 state[key] = value;
             }
         }
-        return state;
+        return this._deflattenObject(state);
     }
 
     /**
@@ -186,6 +181,31 @@ class Layer {
             return acc;
         }, {});
     }
+
+    /**
+ * Recursively deflattens an object with dot notation keys
+ * back into a nested object structure.
+ * @private
+ */
+    _deflattenObject(obj) {
+        const result = {};
+        for (const [key, value] of Object.entries(obj)) {
+            const keys = key.split('.');
+            let current = result;
+            keys.forEach((part, index) => {
+                if (index === keys.length - 1) {
+                    current[part] = value;
+                } else {
+                    if (!current[part] || typeof current[part] !== 'object') {
+                        current[part] = {};
+                    }
+                    current = current[part];
+                }
+            });
+        }
+        return result;
+    }
+
 
 }
 
