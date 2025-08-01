@@ -1,6 +1,6 @@
 # React Ledgex 🚀
 
-**A lightweight, key-value state management library for React with built-in undo/redo support**
+**"Smart, memory-efficient state management for React apps with built-in undo/redo."**
 
 [![npm](https://img.shields.io/npm/v/react-ledgex)](https://www.npmjs.com/package/react-ledgex)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
@@ -11,11 +11,17 @@
 
 ## ✨ Features
 
-✅ **Simple Key-Value Store** – Like `useState` but global and type-safe
-✅ **Time Travel** – Built-in undo/redo functionality
-✅ **Layer Support** – Isolate state changes like Photoshop layers
-✅ **Tiny Bundle** – < 5KB gzipped
-✅ **React Optimized** – Seamless hooks integration
+✅ **Simple Key-Value Store** – Works like `useState` but globally shared and fully type-safe.  
+✅ **Time Travel** – Built-in **undo/redo** with minimal overhead.  
+✅ **Layer Support** – Isolate and manage state changes like Photoshop layers.  
+✅ **Smart & Efficient Storage** –  
+   - Only stores **the attributes that actually changed**, not entire objects.  
+   - No duplicated entries: repeated actions that don’t change state are **ignored**.  
+   - This means even with **large objects (e.g., 30+ attributes)**, memory usage stays **minimal** because unchanged properties reference existing state.  
+✅ **No Empty Tickets** – You only "pay" for meaningful changes. Setting a color to red twice won’t create two history entries.  
+✅ **Tiny Bundle** – Less than **5KB gzipped**.  
+✅ **React Optimized** – Works seamlessly with hooks and integrates easily into existing apps.  
+
 
 ---
 
@@ -66,49 +72,162 @@ function Editor() {
 }
 ```
 
+## 🎨 Real-World Example: Photo Editor Layer Backups (with Undo/Redo)
+
+This example demonstrates how you can use **Ledgex** to **back up complex UI states efficiently**—perfect for use cases like photo editors, where layers are updated frequently and users expect smooth undo/redo functionality.
+
+### 🧠 Concept
+- Use **React state** (`useLayers`) for live rendering and immediate feedback to the user.
+- Use **Ledgex state** (`useLedgex`) to **store history snapshots** for undo/redo actions.
+- Apply **throttling** to prevent storing too many intermediate states (e.g., when the user is dragging or rapidly changing properties).
+
+---
+
+### 🛠 Example Code
+```jsx
+import { useMemo } from 'react';
+import throttle from 'lodash/throttle';
+import { useLayers } from './useLayers'; // your live state hook
+import { useLedgex } from 'react-ledgex';
+
+const { layers, setLayers } = useLayers(); // For live rendering
+const { set, get, undo, redo } = useLedgex(); // For history management (undo/redo)
+
+// Throttle backups to one every 300ms
+const throttledSet = useMemo(() => throttle(set, 300), [set]);
+
+// Update layer properties and back up state
+const handlePropsChange = (layerId, newProps) => {
+    setLayers(prevLayers =>
+        prevLayers.map(layer => {
+            if (layer.id === layerId) {
+                const updatedLayer = layer.clone();
+                updatedLayer.updateProps(newProps);
+
+                // Backup the updated layer to Ledgex
+                throttledSet({
+                    [layerId]: AbstractLayer.toObj(updatedLayer) // Store as Object
+                });
+
+                return updatedLayer;
+            }
+            return layer;
+        })
+    );
+};
+```
+
+---
+
+### ✅ **Why This Works So Well**
+- **Efficient Memory Usage**:  
+  Only essential snapshots are stored, avoiding memory bloat during rapid updates.
+
+- **Smooth User Experience**:  
+  Users get instant live previews while undo/redo history is safely maintained in Ledgex.
+
+- **Throttle-Friendly**:  
+  Frequent updates (e.g., dragging, key presses) won’t overwhelm your history—only meaningful snapshots are stored.
+
+---
+
+### 🔥 **Production Usage**
+This exact pattern is **used in production** to power a photo editor where layer properties (position, size, filters, etc.) change rapidly.  
+**Result**: Fast UI updates + stable, memory-friendly undo/redo.
+
+---
+
+💡 **Tip**: Combine with `redo()` and `undo()` from Ledgex to implement time-travel-like editing effortlessly.
+
+
 ---
 
 ## 🎨 Advanced Features
 
-### Layer Isolation
-```js
-// Separate state for UI vs document
-ledger.set({
-  'ui/toolbar': { activeTool: 'brush' },
-  'document': { layers: [...] }
-});
-```
+### 🔗 Batch Updates (Atomic State Changes)
+Ledgex allows you to **batch multiple updates** into a **single undo/redo point**.  
+This is ideal for actions where multiple properties or objects should be treated as **one meaningful change**.
 
-### Batch Updates
+- **Example:** Updating both color and position of a layer counts as **one** undo step.  
+- **Example:** Aligning three layers at once → a single undo reverts all of them.
+
 ```js
-ledger.set({
-  'canvas': { zoom: 1.2 },
-  'selection': { active: true }
+useLedgex.set({
+  'layer1': { x: 100, y: 200 },
+  'layer2': { x: 100, y: 200 },
+  'layer3': { x: 100, y: 200 }
 }); // Single undo/redo point
 ```
 
-### Efficient History
+✅ **Why it matters**:  
+- Groups related actions → cleaner user experience.  
+- Prevents clutter in history with unnecessary intermediate states.
+
+---
+
+### 🏗 Deeply Nested Object Support
+Ledgex handles **nested objects** efficiently, updating only the **deepest meaningful changes**.  
+You can safely update complex objects without worrying about memory blow-up or redundant history entries.
+
 ```js
-// Configure memory usage
+useLedgex.set({
+  'layer1': {
+    filters: {
+      brightness: 1.2,
+      contrast: 0.8
+    }
+  }
+});
+```
+
+✅ **Why it matters**:  
+- Works seamlessly with structured data like layers, filters, and settings.  
+- Stores only **what actually changed**, even deep inside the object hierarchy.
+
+---
+
+These advanced features make **Ledgex** powerful for apps like **photo editors, diagram tools, or any software with complex state**—without sacrificing performance or simplicity.
+
+### 💾 Efficient History Management
+
+Ledgex gives you full control over how much history is stored by allowing you to configure a **buffer size**.  
+This ensures you **never use more memory than needed**, even in apps with thousands of state changes.
+
+```jsx
+// Limit history to the last 100 meaningful changes
 <LedgexProvider bufferSize={100}>
-  {/* Keeps last 100 states */}
+  <YourApp />
 </LedgexProvider>
 ```
 
-### Don't Pay for empty tickets
+✅ **How it works**:
+- The `bufferSize` prop defines **how many undo/redo states** to keep in memory.
+- Older states are automatically discarded when the buffer is full.
+- Combined with **smart diffing**, only meaningful changes consume space.
 
-Identical commits to the same layer won't count, thus won't affect the size of your storage.
+---
+
+### 🔥 **Why This Matters**
+- **Memory Safety** → Prevents history from growing indefinitely.  
+- **Performance** → Keeps undo/redo operations fast, even in long editing sessions.  
+- **Flexibility** → Developers can adjust buffer size based on app needs (e.g., `50` for light apps, `500` for professional editors).
+
+---
+
+💡 **Tip:** Use a **reasonable buffer size** based on your use case to balance **memory footprint** and **history depth**.
 
 ---
 
 ## 🏆 Why Ledgex?
 
-| Feature          | Ledgex | Redux | Zustand |
-|------------------|--------|-------|---------|
-| Undo/Redo        | ✅ Built-in | ❌ Middleware | ❌ Manual |
-| Key-Value Store  | ✅ Native | ❌ Actions | ✅ Native |
-| Layer Support    | ✅ Photoshop-style | ❌ | ❌ |
-| Bundle Size      | 3.81KB | 16KB | 8KB |
+| Feature           | Ledgex             | Redux            | Zustand        |
+|-------------------|---------------------|------------------|----------------|
+| Undo/Redo         | ✅ **Built-in**     | ❌ Middleware    | ❌ Manual      |
+| Key-Value Store   | ✅ **Native**       | ❌ Actions       | ✅ Native      |
+| Layer Support     | ✅ **Photoshop-style** | ❌             | ❌             |
+| Memory Efficiency | ✅ **Diff-based & No Empty Tickets** | ❌ Full snapshots | ❌ Full snapshots |
+| Bundle Size       | **4~5KB**           | 16KB             | 8KB            |
+
 
 ---
 
