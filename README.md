@@ -9,6 +9,15 @@
 
 ---
 
+## 📚 Quick Links
+- [✨ Features](#-features)
+- [🚀 Installation](#-installation)
+- [💡 Basic Usage](#-basic-usage)
+- [🎨 Real-World Example](#-real-world-example-photo-editor-layer-backups-with-undoredo)
+- [🎨 Advanced Features](#-advanced-features)
+- [🏆 Why Ledgex?](#-why-ledgex)
+- [💖 Support](#-support)
+
 ## ✨ Features
 
 ✅ **Simple Key-Value Store** – Works like `useState` but globally shared and fully type-safe.  
