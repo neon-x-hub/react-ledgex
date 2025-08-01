@@ -16,6 +16,7 @@
 - [🎨 Real-World Example](#-real-world-example-photo-editor-layer-backups-with-undoredo)
 - [🎨 Advanced Features](#-advanced-features)
 - [🏆 Why Ledgex?](#-why-ledgex)
+- [📊 Benchmarks](#-benchmarks)
 - [💖 Support](#-support)
 
 ## ✨ Features
@@ -236,6 +237,49 @@ This ensures you **never use more memory than needed**, even in apps with thousa
 | Layer Support     | ✅ **Photoshop-style** | ❌             | ❌             |
 | Memory Efficiency | ✅ **Diff-based & No Empty Tickets** | ❌ Full snapshots | ❌ Full snapshots |
 | Bundle Size       | **4~5KB**           | 16KB             | 8KB            |
+
+---
+
+## 📊 Benchmarks
+
+## **Benchmark: Low-Entropy Updates on a Large Object (30 attributes, Neglecting Setup overhead)**
+
+### **Scenario**
+
+* Object has **30 attributes** (\~1 KB each, \~30 KB total).
+* You perform **1000 updates**, but **only 1 attribute** changes per update.
+
+| **State Manager**       | **Storage per update**    | **Total Stored (1000 updates)** | **Efficiency**      |
+| ----------------------- | ------------------------- | ------------------------------- | ------------------- |
+| **Ledgex (diff-based)** | \~1 KB (only changed key) | \~1 MB                          | 🔥 **30× smaller**  |
+| **Redux (snapshots)**   | \~30 KB (entire object)   | \~30 MB                         | ❌ copies everything |
+| **Zustand (snapshots)** | \~30 KB                   | \~30 MB                         | ❌ copies everything |
+
+---
+
+## **Benchmark: Varying Entropy (1–30 Attributes Changed, Neglecting setup overhead)**
+
+| **Attributes Changed Per Update** | **Ledgex Stored per Update** | **Redux/Zustand Stored per Update** |
+| --------------------------------- | ---------------------------- | ----------------------------------- |
+| 1                                 | \~1 KB                       | \~30 KB                             |
+| 5                                 | \~5 KB                       | \~30 KB                             |
+| 15                                | \~15 KB                      | \~30 KB                             |
+| 30                                | \~30 KB                      | \~30 KB                             |
+
+✅ **Observation:**
+
+* When only a few attributes change, Ledgex storage grows proportionally to the change.
+* Redux/Zustand remain constant (always full object copy).
+
+---
+
+## 🚀 **Undo/Redo History Impact**
+
+Because Ledgex stores only deltas:
+
+* **Undo memory** = number of attributes changed × number of updates.
+* **Redo** is equally lightweight.
+* In Redux/Zustand, memory grows linearly with **full object size × updates**.
 
 
 ---
