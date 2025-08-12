@@ -1,6 +1,6 @@
 # React Ledgex 🚀
 
-**"Smart, memory-efficient state management for React apps with built-in undo/redo."**
+**"Smart, memory-efficient state management for React apps with built-in undo/redo. Inspured by Git and Photoshop"**
 
 [![npm](https://img.shields.io/npm/v/react-ledgex)](https://www.npmjs.com/package/react-ledgex)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
