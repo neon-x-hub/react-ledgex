@@ -4,6 +4,10 @@
     "description": "Key-value state management with efficient undo/redo for React",
     "main": "dist/index.js",
     "type": "module",
+    "private": false,
+    "publishConfig": {
+        "access": "public"
+    },
     "module": "dist/esm/index.js",
     "types": "dist/types/index.d.ts",
     "files": [
