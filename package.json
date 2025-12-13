@@ -1,6 +1,6 @@
 {
     "name": "@ledgex/react",
-    "version": "0.5.0",
+    "version": "0.5.1",
     "description": "Key-value state management with efficient undo/redo for React",
     "main": "dist/index.js",
     "type": "module",
