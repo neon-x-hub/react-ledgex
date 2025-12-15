@@ -15,15 +15,21 @@
     ],
     "scripts": {
         "build": "rollup -c",
-        "test": "node --test",
+        "test": "npx jest",
         "prepublishOnly": "npm run build && npm test",
         "release": "np --no-tests"
+    },
+    "dependencies": {
+        "@ledgex/core": "^0.5.0"
     },
     "peerDependencies": {
         "react": ">=16.8.0"
     },
     "devDependencies": {
+        "@testing-library/react": "^16.3.0",
+        "jest": "^30.2.0",
         "np": "^7.0.0",
+        "react-test-renderer": "^19.2.3",
         "rollup": "^3.29.5"
     },
     "keywords": [
