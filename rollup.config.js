@@ -11,5 +11,5 @@ export default {
       format: 'es'
     }
   ],
-  external: ['react'] // Don't bundle peer dependencies
+  external: ['react', '@ledgex/core'] // Don't bundle peer dependencies
 };
